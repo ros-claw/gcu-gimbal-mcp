@@ -1,48 +1,80 @@
-# rosclaw-gimbal-mcp
+# gcu-gimbal-mcp
 
-ROSClaw MCP Server for **GCU Camera Gimbal** via Serial protocol.
+ROSClaw MCP Server for **Xianfei GCU Series Camera Gimbal** (先飞技术 GCU 双光吊舱云台) via Serial protocol.
 
 Part of the [ROSClaw](https://github.com/ros-claw) Embodied Intelligence Operating System.
 
 ## Overview
 
-This MCP server enables LLM agents to control a GCU (Gimbal Control Unit) camera gimbal through the Model Context Protocol. It communicates via RS-232/USB serial using the GCU binary protocol with CRC-16 error checking.
+This MCP server enables LLM agents to control **Xianfei Technology (南京先飞技术)** GCU series camera gimbals through the Model Context Protocol. The GCU (Gimbal Control Unit) series includes the **Z-2Mini** and **A5** dual-camera gimbal models featuring visible light + thermal imaging cameras.
+
+The server communicates via RS-232/USB serial using the proprietary GCU binary protocol with CRC-16 error checking.
 
 ```
-LLM Agent  ──MCP──►  rosclaw-gimbal-mcp  ──Serial──►  GCU Gimbal
+LLM Agent  ──MCP──►  gcu-gimbal-mcp  ──Serial──►  GCU Gimbal (Z-2Mini/A5)
 ```
+
+### Manufacturer Information
+
+| Item | Details |
+|------|---------|
+| **Manufacturer** | Xianfei Technology (先飞技术) |
+| **Location** | Nanjing, China (中国南京) |
+| **Product Series** | GCU (Gimbal Control Unit) |
+| **Supported Models** | Z-2Mini, A5 Gimbal |
+| **Product Type** | Dual-camera payload (可见光+热成像双光吊舱) |
 
 ## SDK Information
 
 | Property | Value |
 |----------|-------|
-| **SDK Name** | GCU Gimbal SDK |
+| **SDK Name** | GCU Gimbal SDK (先飞GCU云台SDK) |
 | **SDK Version** | V2.0.6 |
 | **Protocol** | Binary Serial (Proprietary) |
 | **Protocol Document** | [GCU私有通信协议-XF(A5)V2.0.6.pdf](./docs/GCU私有通信协议-XF(A5)V2.0.6.pdf) |
-| **Source** | Proprietary (Xianfei Tech) |
+| **Manufacturer** | Xianfei Technology (先飞技术) |
+| **Product Series** | GCU (Gimbal Control Unit) |
+| **Source** | Proprietary |
 | **License** | Proprietary |
 | **Generated** | 2026-04-07 |
 
 ## Hardware Specification
 
+### Product Information
+
 | Specification | Value |
 |--------------|-------|
-| **Device** | GCU Camera Gimbal (可见光+热成像双光吊舱) |
-| **Model** | Z-2Mini / A5 Gimbal |
-| **Manufacturer** | Xianfei Technology (先飞技术) |
+| **Product Name** | GCU Dual-Camera Gimbal (GCU双光吊舱云台) |
+| **Manufacturer** | Xianfei Technology (先飞技术), Nanjing, China |
+| **Supported Models** | Z-2Mini, A5 |
+| **Camera Type** | Visible Light + Thermal Imaging (可见光+热成像) |
+| **Application** | UAV Payload, Robotics, Surveillance |
+
+### Mechanical Specifications
+
+| Specification | Value |
+|--------------|-------|
 | **Axes** | 3-axis (Yaw, Pitch, Roll) |
 | **Rotation Range** | Yaw: ±170°, Pitch: -90° to +30°, Roll: ±45° |
 | **Max Speed** | ±150°/s (pitch/yaw) |
-| **Protocol** | Binary Serial |
+| **Stabilization** | 3-axis mechanical stabilization |
+
+### Communication Interface
+
+| Specification | Value |
+|--------------|-------|
+| **Protocol** | GCU Binary Serial Protocol |
 | **Serial Config** | 115200 bps, 8 data bits, 1 stop bit, No parity |
 | **Frame Header** | 0xA8 0xE5 (send) / 0x8A 0x5E (receive) |
 | **Checksum** | CRC-16 |
+| **Command Frequency** | Up to 50Hz |
 
 ### Supported Models
 
-- **Z-2Mini**: Compact dual-camera gimbal
-- **A5 Gimbal**: Advanced thermal+visible camera system
+| Model | Description | Weight | Application |
+|-------|-------------|--------|-------------|
+| **Z-2Mini** | Compact dual-camera gimbal | ~300g | Small UAVs, robotics |
+| **A5** | Advanced thermal+visible camera system | ~500g | Professional UAVs |
 
 ### Camera Specifications
 
@@ -67,8 +99,8 @@ LLM Agent  ──MCP──►  rosclaw-gimbal-mcp  ──Serial──►  GCU Gi
 
 ```bash
 # Clone
-git clone https://github.com/ros-claw/rosclaw-gimbal-mcp.git
-cd rosclaw-gimbal-mcp
+git clone https://github.com/ros-claw/gcu-gimbal-mcp.git
+cd gcu-gimbal-mcp
 
 # Install with uv (recommended)
 uv venv --python python3.10
