@@ -4,15 +4,34 @@ ROSClaw Gimbal MCP Server
 GCU (Gimbal Control Unit) MCP Server using Serial protocol.
 Part of the ROSClaw Embodied Intelligence Operating System.
 
+SDK Information:
+    Name: GCU Gimbal SDK
+    Version: V2.0.6
+    Protocol: Binary Serial (Proprietary)
+    Protocol Doc: GCU私有通信协议-XF(A5)V2.0.6.pdf
+    Source: Proprietary (Xianfei Tech)
+    License: Proprietary
+
+Hardware: GCU Gimbal (可见光+热成像双光吊舱)
+    Model: Z-2Mini / A5 Gimbal
+    Manufacturer: Xianfei Technology (先飞技术)
+    Axes: 3-axis (Yaw, Pitch, Roll)
+    Serial: 115200 bps, 8N1
+    Frame: 0xA8 0xE5 header, CRC-16 checksum
+
 Features:
 - Serial communication (COM8 @ 115200bps)
 - Gimbal actions: rotate, set_mode, zoom, photo, record
-- Safety guards for rotation limits
+- Safety guards for rotation limits (±150°/s)
 - State monitoring (angles, velocities)
 - Complete protocol implementation (CRC16)
 
-Hardware: GCU Gimbal (可见光+热成像双光吊舱)
-Protocol: Proprietary Serial Protocol V2.0.6
+Safety Notice:
+    - Max rotation speed: ±150°/s
+    - Yaw range: ±170°, Pitch: -90° to +30°
+    - Emergency stop: use stop_rotation()
+
+Generated: 2026-04-07
 """
 
 import serial
@@ -20,9 +39,28 @@ import struct
 import time
 import threading
 import asyncio
+import json
 from typing import Optional, Tuple, Dict
 from dataclasses import dataclass
 from mcp.server.fastmcp import FastMCP
+
+# SDK Metadata
+SDK_METADATA = {
+    "name": "gcu_gimbal_sdk",
+    "version": "V2.0.6",
+    "protocol": "Binary Serial",
+    "source_url": "Proprietary",
+    "doc_url": "GCU私有通信协议-XF(A5)V2.0.6.pdf",
+    "license": "Proprietary",
+    "hardware_models": ["Z-2Mini", "A5 Gimbal"],
+    "serial_config": {
+        "baudrate": 115200,
+        "bytesize": 8,
+        "parity": "None",
+        "stopbits": 1,
+    },
+    "generated_at": "2026-04-07",
+}
 
 # Initialize MCP Server
 mcp = FastMCP("rosclaw-gimbal")
@@ -387,6 +425,17 @@ _bridge: Optional[GimbalSerialBridge] = None
 
 
 # ============ MCP Tools ============
+
+@mcp.tool()
+async def get_sdk_info() -> str:
+    """
+    Get SDK metadata and version information.
+
+    Returns:
+        JSON string with SDK metadata including version,
+        protocol details, and hardware models.
+    """
+    return json.dumps(SDK_METADATA, indent=2)
 
 @mcp.tool()
 async def connect_gimbal(port: str = "COM8", baudrate: int = 115200) -> str:
@@ -850,6 +899,17 @@ async def get_connection_status() -> str:
         return f"Connected: {_bridge.port} @ {_bridge.baudrate}bps"
     else:
         return "Disconnected"
+
+
+@mcp.resource("gimbal://sdk_info")
+async def get_sdk_info_resource() -> str:
+    """
+    Get SDK metadata and protocol information.
+
+    Returns:
+        SDK name, version, protocol details, and hardware specifications.
+    """
+    return json.dumps(SDK_METADATA, indent=2)
 
 
 if __name__ == "__main__":

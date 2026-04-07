@@ -12,6 +12,47 @@ This MCP server enables LLM agents to control a GCU (Gimbal Control Unit) camera
 LLM Agent  ──MCP──►  rosclaw-gimbal-mcp  ──Serial──►  GCU Gimbal
 ```
 
+## SDK Information
+
+| Property | Value |
+|----------|-------|
+| **SDK Name** | GCU Gimbal SDK |
+| **SDK Version** | V2.0.6 |
+| **Protocol** | Binary Serial (Proprietary) |
+| **Protocol Document** | [GCU私有通信协议-XF(A5)V2.0.6.pdf](./docs/GCU私有通信协议-XF(A5)V2.0.6.pdf) |
+| **Source** | Proprietary (Xianfei Tech) |
+| **License** | Proprietary |
+| **Generated** | 2026-04-07 |
+
+## Hardware Specification
+
+| Specification | Value |
+|--------------|-------|
+| **Device** | GCU Camera Gimbal (可见光+热成像双光吊舱) |
+| **Model** | Z-2Mini / A5 Gimbal |
+| **Manufacturer** | Xianfei Technology (先飞技术) |
+| **Axes** | 3-axis (Yaw, Pitch, Roll) |
+| **Rotation Range** | Yaw: ±170°, Pitch: -90° to +30°, Roll: ±45° |
+| **Max Speed** | ±150°/s (pitch/yaw) |
+| **Protocol** | Binary Serial |
+| **Serial Config** | 115200 bps, 8 data bits, 1 stop bit, No parity |
+| **Frame Header** | 0xA8 0xE5 (send) / 0x8A 0x5E (receive) |
+| **Checksum** | CRC-16 |
+
+### Supported Models
+
+- **Z-2Mini**: Compact dual-camera gimbal
+- **A5 Gimbal**: Advanced thermal+visible camera system
+
+### Camera Specifications
+
+| Feature | Visible Camera | Thermal Camera |
+|---------|---------------|----------------|
+| Resolution | 1920x1080 | 640x512 |
+| Zoom | Optical + Digital | Fixed |
+| Night Vision | No | Yes (IR mode) |
+| Recording | Yes | Yes |
+
 ## Features
 
 - **3-axis control**: Yaw, pitch, roll with degree precision
@@ -21,19 +62,6 @@ LLM Agent  ──MCP──►  rosclaw-gimbal-mcp  ──Serial──►  GCU Gi
 - **Real-time feedback**: Position, temperature, velocity at 50Hz
 - **CRC-16 checksum**: Reliable serial communication
 - **Auto-reconnect**: Handles serial disconnections gracefully
-
-## Hardware
-
-| Field | Value |
-|-------|-------|
-| Device | GCU Camera Gimbal |
-| Protocol | Binary Serial (RS-232 / USB-Serial) |
-| Baud Rate | 115200 bps |
-| Data Bits | 8 |
-| Stop Bits | 1 |
-| Parity | None |
-| Header | `0xA8 0xE5` (send) / `0xA8 0xE4` (receive) |
-| Checksum | CRC-16 |
 
 ## Installation
 
@@ -75,7 +103,10 @@ python src/gimbal_mcp_server.py
     "rosclaw-gimbal": {
       "command": "python",
       "args": ["/path/to/rosclaw-gimbal-mcp/src/gimbal_mcp_server.py"],
-      "transportType": "stdio"
+      "transportType": "stdio",
+      "description": "GCU Gimbal V2.0.6",
+      "sdk_version": "V2.0.6",
+      "sdk_source": "Proprietary"
     }
   }
 }
@@ -93,63 +124,146 @@ mcp dev src/gimbal_mcp_server.py
 |------|-------------|
 | `connect_gimbal` | Connect to gimbal on serial port |
 | `disconnect_gimbal` | Disconnect from gimbal |
-| `set_gimbal_mode` | Set control mode (stabilize/follow/fpv/lock) |
-| `rotate_gimbal` | Rotate with angular velocity |
+| `set_mode` | Set control mode (stabilize/follow/fpv/lock) |
+| `rotate` | Rotate with angular velocity |
 | `set_euler_angles` | Go to absolute yaw/pitch/roll |
-| `center_gimbal` | Return to center position |
+| `reset_gimbal` | Return to center position |
+| `calibrate` | Calibrate gimbal IMU |
 | `take_photo` | Trigger camera shutter |
-| `start_recording` | Start video recording |
-| `stop_recording` | Stop video recording |
-| `set_zoom` | Set optical/digital zoom level |
-| `set_focus` | Set focus mode (auto/manual) |
+| `toggle_record` | Toggle video recording |
+| `zoom` | Control zoom (in/out/stop) |
+| `set_zoom_level` | Set specific zoom level |
+| `focus` | Trigger autofocus |
 | `set_night_vision` | Enable IR/night vision mode |
-| `get_gimbal_status` | Get current angles and state |
-| `set_stabilization` | Enable/disable stabilization |
+| `set_osd` | Enable/disable on-screen display |
+| `set_illumination` | Set LED illumination brightness |
+| `set_ranging` | Enable laser rangefinder |
+| `stop_rotation` | Emergency stop rotation |
+| `demo_scan` | Perform scan demonstration |
 
 ## Available Resources
 
 | Resource | Description |
 |----------|-------------|
 | `gimbal://status` | Current angles, mode, temperature |
-| `gimbal://capabilities` | Hardware specs, limits |
 | `gimbal://connection` | Serial connection status |
+| `gimbal://sdk_info` | SDK metadata and version |
+
+## Work Modes
+
+| Mode | Code | Description |
+|------|------|-------------|
+| `angle_lock` | 0x11 | Pointing lock mode (角速度控制) |
+| `follow` | 0x12 | Pointing follow mode |
+| `euler` | 0x14 | Euler angle control mode |
+| `fpv` | 0x1C | First-person view mode |
+| `top_down` | 0x13 | Top-down shooting mode |
 
 ## Angle Limits
 
-| Axis | Range |
-|------|-------|
-| Yaw | -170° to +170° |
-| Pitch | -90° to +30° |
-| Roll | -45° to +45° |
+| Axis | Range | Safety Level |
+|------|-------|--------------|
+| Yaw | -170° to +170° | 🟠 HIGH |
+| Pitch | -90° to +30° | 🟠 HIGH |
+| Roll | -45° to +45° | 🟡 MEDIUM |
 
-## Modes
+### Speed Limits
 
-| Mode | Description |
-|------|-------------|
-| `stabilize` | Hold absolute orientation |
-| `follow` | Follow vehicle heading |
-| `fpv` | First-person view (locked to vehicle) |
-| `lock` | Lock to current position |
+| Axis | Max Speed | Safety Level |
+|------|-----------|--------------|
+| Pitch | ±150°/s | 🔴 CRITICAL |
+| Yaw | ±150°/s | 🔴 CRITICAL |
+| Roll | ±150°/s | 🔴 CRITICAL |
 
 ## Serial Protocol
 
 The GCU protocol uses binary frames:
 
 ```
-[0xA8][0xE5][LEN][CMD][PARAMS...][CRC16_L][CRC16_H]
+[0xA8][0xE5][LEN_L][LEN_H][VER][DATA...][CRC16_L][CRC16_H]
 ```
 
-Commands implemented:
-- `0x01` — Control mode
-- `0x02` — Euler angle target
-- `0x03` — Angular velocity
-- `0x04` — Camera shutter
-- `0x05` — Video record
-- `0x06` — Zoom control
-- `0x07` — Focus control
-- `0x08` — Night vision / IR
-- `0x09` — Center gimbal
-- `0x10` — Query state
+### Frame Structure
+
+| Field | Size | Description |
+|-------|------|-------------|
+| Header | 2 bytes | 0xA8 0xE5 (send) / 0x8A 0x5E (receive) |
+| Length | 2 bytes | Packet length (little-endian) |
+| Version | 1 byte | Protocol version (0x01) |
+| Data | Variable | Command + parameters |
+| CRC16 | 2 bytes | CRC-16 checksum (big-endian) |
+
+### Command Codes
+
+| Command | Code | Description |
+|---------|------|-------------|
+| `CMD_CALIBRATION` | 0x01 | IMU calibration |
+| `CMD_RESET` | 0x03 | Reset to center |
+| `CMD_PHOTO` | 0x20 | Take photo |
+| `CMD_RECORD` | 0x21 | Toggle recording |
+| `CMD_ZOOM_IN` | 0x22 | Zoom in |
+| `CMD_ZOOM_OUT` | 0x23 | Zoom out |
+| `CMD_ZOOM_STOP` | 0x24 | Stop zoom |
+| `CMD_ZOOM_SET` | 0x25 | Set zoom level |
+| `CMD_FOCUS` | 0x26 | Autofocus |
+| `CMD_NIGHT_VISION` | 0x2B | IR/night vision |
+| `CMD_OSD` | 0x73 | On-screen display |
+| `CMD_ILLUMINATION` | 0x80 | LED brightness |
+| `CMD_RANGING` | 0x81 | Laser rangefinder |
+
+## Safety Information
+
+**WARNING:** This MCP server controls a motorized gimbal. Improper use can cause:
+- Equipment damage
+- Motor overheating
+- Mechanical wear
+
+### Safety Features
+
+| Feature | Description |
+|---------|-------------|
+| **Speed Limits** | ±150°/s enforced in software |
+| **Angle Limits** | Mechanical limits enforced |
+| **CRC Checksum** | All packets validated |
+| **Emergency Stop** | `stop_rotation()` immediate halt |
+
+### Safety Levels
+
+| Level | Color | Description | Example |
+|-------|-------|-------------|---------|
+| **CRITICAL** | 🔴 | Immediate danger | Speed > 150°/s |
+| **HIGH** | 🟠 | Potential damage | Angle near limit |
+| **MEDIUM** | 🟡 | Caution needed | Extended operation |
+| **LOW** | 🟢 | Informational | Status check |
+
+### Emergency Procedures
+
+1. **Immediate Stop**: Use `stop_rotation()` tool
+2. **Power Off**: Disconnect power if mechanical issue
+3. **Reset**: Use `reset_gimbal()` to return to center
+
+## Error Handling
+
+### Error Codes
+
+| Code | Name | Severity | Description |
+|------|------|----------|-------------|
+| -1 | CONNECTION_FAILED | 🟠 error | Serial port not accessible |
+| -2 | TIMEOUT | 🟠 error | Command response timeout |
+| -3 | INVALID_PARAMETER | 🟠 error | Invalid angle or speed |
+| -4 | SAFETY_VIOLATION | 🔴 critical | Exceeds speed/angle limits |
+| -5 | NOT_INITIALIZED | 🟠 error | Not connected |
+| -6 | CRC_ERROR | 🟠 error | Checksum mismatch |
+
+### Troubleshooting
+
+| Issue | Possible Cause | Solution |
+|-------|---------------|----------|
+| Connection failed | Port not found | Check COM port in Device Manager |
+| Connection failed | Permission denied | Add user to `dialout` group |
+| Command no response | Wrong baudrate | Verify 115200 setting |
+| Jerky movement | EMI interference | Use shielded cable |
+| CRC errors | Cable too long | Max 3m for USB-serial |
 
 ## Finding Your Serial Port
 
@@ -175,22 +289,39 @@ ls /dev/tty.usbserial-*
 
 ```
 gimbal_mcp_server.py
-├── GimbalState      — Gimbal state dataclass
-├── GimbalSerialBridge — Serial communication bridge
-│   ├── connect()    — Open serial port
-│   ├── _calculate_crc16() — CRC-16 checksum
+├── SDK_METADATA          — SDK version and protocol info
+├── GimbalState          — Gimbal state dataclass
+├── GimbalSerialBridge   — Serial communication bridge
+│   ├── connect()        — Open serial port
+│   ├── _calculate_crc16() — CRC-16 implementation
 │   ├── _build_control_packet() — Build binary frame
-│   ├── _send_command() — Thread-safe send
-│   └── _read_thread() — Background 50Hz reader
-└── MCP Tools        — FastMCP tool definitions
+│   ├── send_packet()    — Thread-safe send
+│   └── _recv_loop()     — Background 50Hz reader
+└── MCP Tools           — FastMCP tool definitions
 ```
+
+## References
+
+- **GCU Protocol**: [GCU私有通信协议-XF(A5)V2.0.6.pdf](./docs/GCU私有通信协议-XF(A5)V2.0.6.pdf)
+- **User Manual**: [Z-2Mini用户手册-XF(A5)V1.4.pdf](./docs/Z-2Mini用户手册-XF(A5)V1.4.pdf)
+- **MCP Protocol**: https://modelcontextprotocol.io/
+- **PySerial**: https://pyserial.readthedocs.io/
 
 ## License
 
 MIT License — See [LICENSE](LICENSE)
+
+**Note**: The GCU protocol is proprietary to Xianfei Technology. This MCP server is an independent implementation based on the published protocol specification.
 
 ## Part of ROSClaw
 
 - [rosclaw-g1-dds-mcp](https://github.com/ros-claw/rosclaw-g1-dds-mcp) — Unitree G1 (DDS)
 - [rosclaw-ur-ros2-mcp](https://github.com/ros-claw/rosclaw-ur-ros2-mcp) — UR5 arm (ROS2)
 - [rosclaw-gimbal-mcp](https://github.com/ros-claw/rosclaw-gimbal-mcp) — GCU Gimbal (Serial)
+- [rosclaw-ur-rtde-mcp](https://github.com/ros-claw/rosclaw-ur-rtde-mcp) — UR5 via RTDE
+
+---
+
+**Generated by ROSClaw SDK-to-MCP Transformer**
+
+*SDK Version: GCU V2.0.6 | Protocol: Binary Serial | CRC-16*
