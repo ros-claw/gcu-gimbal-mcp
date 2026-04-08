@@ -1,14 +1,12 @@
 # gcu-gimbal-mcp
 
-🌐 **English** | [中文](./README.zh.md)
-
-ROSClaw MCP Server for **Xianfei GCU Series Camera Gimbal** via Serial protocol.
+ROSClaw MCP Server for **Xianfei GCU Series Camera Gimbal** (先飞技术 GCU 双光吊舱云台) via Serial protocol.
 
 Part of the [ROSClaw](https://github.com/ros-claw) Embodied Intelligence Operating System.
 
-## Overview
+## 概述
 
-This MCP server enables LLM agents to control **Xianfei Technology** GCU series camera gimbals through the Model Context Protocol. The GCU (Gimbal Control Unit) series includes the **Z-2Mini** and **A5** dual-camera gimbal models featuring visible light + thermal imaging cameras.
+This MCP server enables LLM agents to control **Xianfei Technology (南京先飞技术)** GCU series camera gimbals through the Model Context Protocol. The GCU (Gimbal Control Unit) series includes the **Z-2Mini** and **A5** dual-camera gimbal models featuring visible light + thermal imaging cameras.
 
 The server communicates via RS-232/USB serial using the proprietary GCU binary protocol with CRC-16 error checking.
 
@@ -16,78 +14,78 @@ The server communicates via RS-232/USB serial using the proprietary GCU binary p
 LLM Agent  ──MCP──►  gcu-gimbal-mcp  ──Serial──►  GCU Gimbal (Z-2Mini/A5)
 ```
 
-### Manufacturer Information
+### 制造商信息
 
-| Item | Details |
+| 项目 | 详情 |
 |------|---------|
-| **Manufacturer** | Xianfei Technology |
-| **Location** | Nanjing, China |
-| **Product Series** | GCU (Gimbal Control Unit) |
-| **Supported Models** | Z-2Mini, A5 Gimbal |
-| **Product Type** | Dual-camera payload (Visible + Thermal) |
+| **制造商** | Xianfei Technology (先飞技术) |
+| **位置** | Nanjing, China (中国南京) |
+| **产品系列** | GCU (Gimbal Control Unit) |
+| **支持型号** | Z-2Mini, A5 Gimbal |
+| **产品类型** | Dual-camera payload (可见光+热成像双光吊舱) |
 
-## SDK Information
+## SDK 信息
 
-| Property | Value |
+| 属性 | 值 |
 |----------|-------|
-| **SDK Name** | GCU Gimbal SDK |
-| **SDK Version** | V2.0.6 |
-| **Protocol** | Binary Serial (Proprietary) |
-| **Protocol Document** | [GCU Protocol V2.0.6 (Chinese)](./docs/GCU私有通信协议-XF(A5)V2.0.6.pdf) |
-| **Manufacturer** | Xianfei Technology |
-| **Product Series** | GCU (Gimbal Control Unit) |
-| **Source** | Proprietary |
-| **License** | Proprietary |
-| **Generated** | 2026-04-07 |
+| **SDK 名称** | GCU Gimbal SDK (先飞GCU云台SDK) |
+| **SDK 版本** | V2.0.6 |
+| **协议** | Binary Serial (Proprietary) |
+| **协议文档** | [GCU私有通信协议-XF(A5)V2.0.6.pdf](./docs/GCU私有通信协议-XF(A5)V2.0.6.pdf) |
+| **制造商** | Xianfei Technology (先飞技术) |
+| **产品系列** | GCU (Gimbal Control Unit) |
+| **来源** | Proprietary |
+| **许可证** | Proprietary |
+| **生成日期** | 2026-04-07 |
 
-## Hardware Specification
+## 硬件规格
 
-### Product Information
+### 产品信息
 
-| Specification | Value |
+| 规格 | 值 |
 |--------------|-------|
-| **Product Name** | GCU Dual-Camera Gimbal |
-| **Manufacturer** | Xianfei Technology, Nanjing, China |
-| **Supported Models** | Z-2Mini, A5 |
-| **Camera Type** | Visible Light + Thermal Imaging |
-| **Application** | UAV Payload, Robotics, Surveillance |
+| **产品名称** | GCU Dual-Camera Gimbal (GCU双光吊舱云台) |
+| **制造商** | Xianfei Technology (先飞技术), Nanjing, China |
+| **支持型号** | Z-2Mini, A5 |
+| **相机类型** | Visible Light + Thermal Imaging (可见光+热成像) |
+| **应用** | UAV Payload, Robotics, Surveillance |
 
-### Mechanical Specifications
+### 机械规格
 
-| Specification | Value |
+| 规格 | 值 |
 |--------------|-------|
-| **Axes** | 3-axis (Yaw, Pitch, Roll) |
-| **Rotation Range** | Yaw: ±170°, Pitch: -90° to +30°, Roll: ±45° |
-| **Max Speed** | ±150°/s (pitch/yaw) |
-| **Stabilization** | 3-axis mechanical stabilization |
+| **轴数** | 3-axis (Yaw, Pitch, Roll) |
+| **旋转范围** | Yaw: ±170°, Pitch: -90° to +30°, Roll: ±45° |
+| **最大速度** | ±150°/s (pitch/yaw) |
+| **稳定** | 3-axis mechanical stabilization |
 
-### Communication Interface
+### 通信接口
 
-| Specification | Value |
+| 规格 | 值 |
 |--------------|-------|
-| **Protocol** | GCU Binary Serial Protocol |
-| **Serial Config** | 115200 bps, 8 data bits, 1 stop bit, No parity |
-| **Frame Header** | 0xA8 0xE5 (send) / 0x8A 0x5E (receive) |
-| **Checksum** | CRC-16 |
-| **Command Frequency** | Up to 50Hz |
+| **协议** | GCU Binary Serial Protocol |
+| **串口配置** | 115200 bps, 8 data bits, 1 stop bit, No parity |
+| **帧头** | 0xA8 0xE5 (send) / 0x8A 0x5E (receive) |
+| **校验** | CRC-16 |
+| **命令频率** | Up to 50Hz |
 
-### Supported Models
+### 支持型号
 
-| Model | Description | Weight | Application |
-|-------|-------------|--------|-------------|
+| 型号 | 描述 | 重量 | 应用 |
+|-------|-------------|--------|----------|
 | **Z-2Mini** | Compact dual-camera gimbal | ~300g | Small UAVs, robotics |
 | **A5** | Advanced thermal+visible camera system | ~500g | Professional UAVs |
 
-### Camera Specifications
+### 相机规格
 
-| Feature | Visible Camera | Thermal Camera |
+| 特性 | 可见光相机 | 热成像相机 |
 |---------|---------------|----------------|
-| Resolution | 1920x1080 | 640x512 |
-| Zoom | Optical + Digital | Fixed |
-| Night Vision | No | Yes (IR mode) |
-| Recording | Yes | Yes |
+| 分辨率 | 1920x1080 | 640x512 |
+| 变焦 | Optical + Digital | Fixed |
+| 夜视 | No | Yes (IR mode) |
+| 录制 | Yes | Yes |
 
-## Features
+## 功能特性
 
 - **3-axis control**: Yaw, pitch, roll with degree precision
 - **Multiple modes**: Stabilization, follow, FPV, lock
@@ -97,7 +95,7 @@ LLM Agent  ──MCP──►  gcu-gimbal-mcp  ──Serial──►  GCU Gimbal
 - **CRC-16 checksum**: Reliable serial communication
 - **Auto-reconnect**: Handles serial disconnections gracefully
 
-## Installation
+## 安装
 
 ```bash
 # Clone
@@ -113,30 +111,23 @@ uv pip install -e .
 pip install -e .
 ```
 
-### Serial Port Permissions (Linux)
+### 串口权限 (Linux)
 
 ```bash
 sudo usermod -a -G dialout $USER
 # Log out and back in
 ```
 
-## Quick Start
+## 快速开始
 
-```bash
-sudo usermod -a -G dialout $USER
-# Log out and back in
-```
-
-## Quick Start
-
-### Run as MCP Server
+### 作为 MCP Server 运行
 
 ```bash
 # stdio transport
 python src/gimbal_mcp_server.py
 ```
 
-### Claude Desktop Configuration
+### Claude Desktop 配置
 
 ```json
 {
@@ -153,15 +144,15 @@ python src/gimbal_mcp_server.py
 }
 ```
 
-### MCP Inspector (Testing)
+### MCP Inspector (测试)
 
 ```bash
 mcp dev src/gimbal_mcp_server.py
 ```
 
-## Available Tools
+## 可用工具
 
-| Tool | Description |
+| 工具 | 描述 |
 |------|-------------|
 | `connect_gimbal` | Connect to gimbal on serial port |
 | `disconnect_gimbal` | Disconnect from gimbal |
@@ -182,41 +173,41 @@ mcp dev src/gimbal_mcp_server.py
 | `stop_rotation` | Emergency stop rotation |
 | `demo_scan` | Perform scan demonstration |
 
-## Available Resources
+## 可用资源
 
-| Resource | Description |
+| 资源 | 描述 |
 |----------|-------------|
 | `gimbal://status` | Current angles, mode, temperature |
 | `gimbal://connection` | Serial connection status |
 | `gimbal://sdk_info` | SDK metadata and version |
 
-## Work Modes
+## 工作模式
 
-| Mode | Code | Description |
+| 模式 | 代码 | 描述 |
 |------|------|-------------|
-| `angle_lock` | 0x11 | Pointing lock mode |
+| `angle_lock` | 0x11 | Pointing lock mode (角速度控制) |
 | `follow` | 0x12 | Pointing follow mode |
 | `euler` | 0x14 | Euler angle control mode |
 | `fpv` | 0x1C | First-person view mode |
 | `top_down` | 0x13 | Top-down shooting mode |
 
-## Angle Limits
+## 角度限制
 
-| Axis | Range | Safety Level |
+| 轴 | 范围 | 安全级别 |
 |------|-------|--------------|
 | Yaw | -170° to +170° | 🟠 HIGH |
 | Pitch | -90° to +30° | 🟠 HIGH |
 | Roll | -45° to +45° | 🟡 MEDIUM |
 
-### Speed Limits
+### 速度限制
 
-| Axis | Max Speed | Safety Level |
+| 轴 | 最大速度 | 安全级别 |
 |------|-----------|--------------|
 | Pitch | ±150°/s | 🔴 CRITICAL |
 | Yaw | ±150°/s | 🔴 CRITICAL |
 | Roll | ±150°/s | 🔴 CRITICAL |
 
-## Serial Protocol
+## 串口协议
 
 The GCU protocol uses binary frames:
 
@@ -224,9 +215,9 @@ The GCU protocol uses binary frames:
 [0xA8][0xE5][LEN_L][LEN_H][VER][DATA...][CRC16_L][CRC16_H]
 ```
 
-### Frame Structure
+### 帧结构
 
-| Field | Size | Description |
+| 字段 | 大小 | 描述 |
 |-------|------|-------------|
 | Header | 2 bytes | 0xA8 0xE5 (send) / 0x8A 0x5E (receive) |
 | Length | 2 bytes | Packet length (little-endian) |
@@ -234,9 +225,9 @@ The GCU protocol uses binary frames:
 | Data | Variable | Command + parameters |
 | CRC16 | 2 bytes | CRC-16 checksum (big-endian) |
 
-### Command Codes
+### 命令代码
 
-| Command | Code | Description |
+| 命令 | 代码 | 描述 |
 |---------|------|-------------|
 | `CMD_CALIBRATION` | 0x01 | IMU calibration |
 | `CMD_RESET` | 0x03 | Reset to center |
@@ -252,42 +243,42 @@ The GCU protocol uses binary frames:
 | `CMD_ILLUMINATION` | 0x80 | LED brightness |
 | `CMD_RANGING` | 0x81 | Laser rangefinder |
 
-## Safety Information
+## 安全信息
 
-**WARNING:** This MCP server controls a motorized gimbal. Improper use can cause:
+**警告:** This MCP server controls a motorized gimbal. Improper use can cause:
 - Equipment damage
 - Motor overheating
 - Mechanical wear
 
-### Safety Features
+### 安全特性
 
-| Feature | Description |
+| 特性 | 描述 |
 |---------|-------------|
-| **Speed Limits** | ±150°/s enforced in software |
-| **Angle Limits** | Mechanical limits enforced |
-| **CRC Checksum** | All packets validated |
-| **Emergency Stop** | `stop_rotation()` immediate halt |
+| **速度限制** | ±150°/s enforced in software |
+| **角度限制** | Mechanical limits enforced |
+| **CRC 校验** | All packets validated |
+| **紧急停止** | `stop_rotation()` immediate halt |
 
-### Safety Levels
+### 安全级别
 
-| Level | Color | Description | Example |
+| 级别 | 颜色 | 描述 | 示例 |
 |-------|-------|-------------|---------|
 | **CRITICAL** | 🔴 | Immediate danger | Speed > 150°/s |
 | **HIGH** | 🟠 | Potential damage | Angle near limit |
 | **MEDIUM** | 🟡 | Caution needed | Extended operation |
 | **LOW** | 🟢 | Informational | Status check |
 
-### Emergency Procedures
+### 紧急程序
 
-1. **Immediate Stop**: Use `stop_rotation()` tool
-2. **Power Off**: Disconnect power if mechanical issue
-3. **Reset**: Use `reset_gimbal()` to return to center
+1. **立即停止**: Use `stop_rotation()` tool
+2. **断电**: Disconnect power if mechanical issue
+3. **复位**: Use `reset_gimbal()` to return to center
 
-## Error Handling
+## 错误处理
 
-### Error Codes
+### 错误代码
 
-| Code | Name | Severity | Description |
+| 代码 | 名称 | 严重级别 | 描述 |
 |------|------|----------|-------------|
 | -1 | CONNECTION_FAILED | 🟠 error | Serial port not accessible |
 | -2 | TIMEOUT | 🟠 error | Command response timeout |
@@ -296,9 +287,9 @@ The GCU protocol uses binary frames:
 | -5 | NOT_INITIALIZED | 🟠 error | Not connected |
 | -6 | CRC_ERROR | 🟠 error | Checksum mismatch |
 
-### Troubleshooting
+### 故障排除
 
-| Issue | Possible Cause | Solution |
+| 问题 | 可能原因 | 解决方案 |
 |-------|---------------|----------|
 | Connection failed | Port not found | Check COM port in Device Manager |
 | Connection failed | Permission denied | Add user to `dialout` group |
@@ -306,7 +297,7 @@ The GCU protocol uses binary frames:
 | Jerky movement | EMI interference | Use shielded cable |
 | CRC errors | Cable too long | Max 3m for USB-serial |
 
-## Finding Your Serial Port
+## 查找串口
 
 ```bash
 # Linux
@@ -320,13 +311,13 @@ ls /dev/ttyUSB* /dev/ttyACM*
 ls /dev/tty.usbserial-*
 ```
 
-## Dependencies
+## 依赖
 
 - Python 3.10+
 - `mcp[fastmcp]` — MCP framework
 - `pyserial` — Serial communication
 
-## Architecture
+## 架构
 
 ```
 gimbal_mcp_server.py
@@ -341,18 +332,18 @@ gimbal_mcp_server.py
 └── MCP Tools           — FastMCP tool definitions
 ```
 
-## References
+## 参考
 
-- **GCU Protocol**: [GCU Protocol V2.0.6 (Chinese)](./docs/GCU私有通信协议-XF(A5)V2.0.6.pdf)
-- **User Manual**: [Z-2Mini User Manual (Chinese)](./docs/Z-2Mini用户手册-XF(A5)V1.4.pdf)
-- **MCP Protocol**: https://modelcontextprotocol.io/
+- **GCU 协议**: [GCU私有通信协议-XF(A5)V2.0.6.pdf](./docs/GCU私有通信协议-XF(A5)V2.0.6.pdf)
+- **用户手册**: [Z-2Mini用户手册-XF(A5)V1.4.pdf](./docs/Z-2Mini用户手册-XF(A5)V1.4.pdf)
+- **MCP 协议**: https://modelcontextprotocol.io/
 - **PySerial**: https://pyserial.readthedocs.io/
 
-## License
+## 许可证
 
 MIT License — See [LICENSE](LICENSE)
 
-**Note**: The GCU protocol is proprietary to Xianfei Technology. This MCP server is an independent implementation based on the published protocol specification.
+**注意**: The GCU protocol is proprietary to Xianfei Technology. This MCP server is an independent implementation based on the published protocol specification.
 
 ## Part of ROSClaw
 
