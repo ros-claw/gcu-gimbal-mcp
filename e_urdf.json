@@ -1,0 +1,64 @@
+{
+  "embodiment_id": "gcu_gimbal_v1",
+  "embodiment_name": "GCU Gimbal (Serial)",
+  "version": "1.0.0",
+  "meta": {
+    "manufacturer": "Xianfei",
+    "model": "GCU Gimbal",
+    "description": "Camera gimbal stabilizer with 3-axis control via serial protocol",
+    "url": "https://github.com/xianfei/GCU-SDK",
+    "tags": ["gimbal", "camera", "stabilization", "serial"],
+    "difficulty": "beginner",
+    "release_date": "2023-01",
+    "generated_by": "sdk_to_mcp_v2.0"
+  },
+  "kinematics": {
+    "base_frame": "gimbal_base",
+    "dof": 3,
+    "joint_topology": "serial",
+    "workspace_type": "spherical"
+  },
+  "joints": {
+    "names": [
+      "yaw_axis",
+      "pitch_axis",
+      "roll_axis"
+    ],
+    "limits": {
+      "position_rad": {
+        "yaw_axis": [-3.14, 3.14],
+        "pitch_axis": [-1.57, 1.57],
+        "roll_axis": [-1.57, 1.57]
+      }
+    }
+  },
+  "semantics": {
+    "robot_type": "gimbal",
+    "affordances": [
+      "camera_stabilization",
+      "pan",
+      "tilt",
+      "roll_compensation"
+    ],
+    "typical_payload_kg": 1.0,
+    "max_payload_kg": 2.0
+  },
+  "sdk_mappings": {
+    "serial_driver": "GCU-SDK",
+    "protocol": "Serial",
+    "baud_rate": 115200
+  },
+  "mcp_server_config": {
+    "tools": [
+      "set_gimbal_angles",
+      "get_gimbal_state",
+      "enable_stabilization",
+      "disable_stabilization"
+    ],
+    "resources": [
+      "gimbal://state/angles",
+      "gimbal://state/stabilization"
+    ],
+    "transport": "stdio"
+  }
+}
